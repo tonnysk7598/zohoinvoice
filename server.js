@@ -1,6 +1,8 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
+app.use(express.json());
+
 const port = process.env.PORT || 5000;
 
 const config = require('./config.json');
@@ -54,4 +56,26 @@ app.get('/getAllContacts', async (req, res) => {
     .then( data => {
       res.send(data);
     });
+});
+
+app.post('/createNewContact', async (req, res) => {
+  const { contactName, companyName } = JSON.parse(req.body);
+  const contactData = {
+    contact_name: contactName,
+    companyName: companyName,
+  }
+  console.error(contactData)
+//   fetch(urls.getAllContacts, { 
+//     headers:   {
+//       "Authorization": `Zoho-oauthtoken ${accessToken}`,
+//       "X-com-zoho-invoice-organizationid": `${orgId}`,
+//       "Content-Type": "multipart/form-data"
+//     },
+//     method: 'POST',
+//     body: JSON.stringify(contactData)
+//  })
+//     .then( res => res.json() )
+//     .then( data => {
+//       res.send(data);
+//     });
 });

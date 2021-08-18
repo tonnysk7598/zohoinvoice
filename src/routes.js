@@ -1,11 +1,19 @@
-import Bill from 'views/Index';
+import Home from 'views/Index';
+import Create from 'views/CreateContact';
 
 var routes = [
   {
     path: "/home",
     name: "Home",
     icon: "fas fa-home",
-    component: Bill,
+    component: Home,
+    layout: "/admin",
+  },
+  {
+    path: "/create",
+    name: "Create",
+    icon: "fas fa-user-edit",
+    component: Create,
     layout: "/admin",
   }
 ];
