@@ -1,5 +1,3 @@
 {
-    "getAllContacts": "https://invoice.zoho.com/api/v3/contacts",
-    "createNewContact": "https://invoice.zoho.com/api/v3/contacts"
-
+    "contactsUrl": "https://invoice.zoho.com/api/v3/contacts"
 }

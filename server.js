@@ -1,5 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
+var request = require("request");
+
 const app = express();
 app.use(express.json());
 
@@ -47,35 +49,52 @@ async function getAccessToken(refresh_token) {
 
 app.get('/getAllContacts', async (req, res) => {
 
-  fetch(urls.getAllContacts, { headers:   {
+  fetch(urls.contactsUrl, { headers:   {
     "Authorization": `Zoho-oauthtoken ${accessToken}`,
     "X-com-zoho-invoice-organizationid": `${orgId}`,
     "Content-Type": "multipart/form-data"
   } })
     .then( res => res.json() )
     .then( data => {
-      res.send(data);
+      res.send(data.contacts);
     });
 });
 
 app.post('/createNewContact', async (req, res) => {
-  const { contactName, companyName } = JSON.parse(req.body);
+  const { contactName, companyName } = req.body;
   const contactData = {
     contact_name: contactName,
     companyName: companyName,
   }
   console.error(contactData)
-//   fetch(urls.getAllContacts, { 
-//     headers:   {
-//       "Authorization": `Zoho-oauthtoken ${accessToken}`,
-//       "X-com-zoho-invoice-organizationid": `${orgId}`,
-//       "Content-Type": "multipart/form-data"
-//     },
-//     method: 'POST',
-//     body: JSON.stringify(contactData)
-//  })
-//     .then( res => res.json() )
-//     .then( data => {
-//       res.send(data);
-//     });
+  var options =
+  {
+    method: 'POST',
+    url: urls.contactsUrl,
+    qs: { organization_id: orgId },
+    headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+    formData: {
+      JSONString: JSON.stringify(contactData)
+    }
+  };
+  request(options, function (error, response, body) { 
+    if (error) throw new Error(error);
+    res.send(response);
+  });
+});
+
+app.post('/deleteContact', async (req, res) => {
+  const { contactId } = req.body;
+  console.error(contactId)
+  var options =
+  {
+    method: 'DELETE',
+    url: `${urls.contactsUrl}/${contactId}`,
+    qs: { organization_id: orgId },
+    headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+  };
+  request(options, function (error, response, body) { 
+    if (error) throw new Error(error);
+    res.send(response);
+  });
 });
