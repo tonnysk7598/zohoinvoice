@@ -8,11 +8,68 @@ export default class CreateContact extends Component {
   state = {
     contactName: '',
     companyName: '',
+    email: '',
+    heading: ''
+  }
+
+  componentWillMount() {
+    const editMode = sessionStorage.getItem("edit")
+    if(editMode === 'true'){
+      const contact = JSON.parse(sessionStorage.getItem("contact"))
+      this.setState({
+        contactName: contact.contact_name,
+        companyName: contact.company_name,
+        email: contact.email,
+        heading: 'Edit Contact'
+      })
+    } else {
+      this.setState({ heading: 'Create Contact' });
+    }
   }
 
   submit = async () => {
     const { contactName, companyName } = this.state;
+    const editMode = sessionStorage.getItem("edit")
     const dt = { contactName, companyName }
+    if(editMode === 'true'){
+      this.editContact(dt);
+    } else {
+      this.createContact(dt);
+    }
+  }
+
+  editContact = async (dt) => {
+    const contact = JSON.parse(sessionStorage.getItem("contact"))
+    const editData = {
+      contactName: dt.contactName,
+      companyName: dt.companyName,
+      contactId: contact.contact_id
+    }
+    console.error(editData)
+    const putData = await fetch('/updateContact', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'put',
+      body: JSON.stringify(editData)
+    })
+    const res = await putData.json();
+    console.error(res)
+    // if (res.statusCode === 201) {
+    //   swal({
+    //     title: 'Success',
+    //     text: 'Record Created Successfully',
+    //     icon: 'success',
+    //     button: true,
+    //   })
+    //     .then(() => {
+    //       window.location = '/'
+    //     })
+    // }
+  }
+
+  createContact = async (dt) => {
     const postData = await fetch('/createNewContact', {
       headers: {
         'Accept': 'application/json',
@@ -36,14 +93,14 @@ export default class CreateContact extends Component {
   }
 
   render() {
-    const { contactName, companyName } = this.state;
+    const { contactName, companyName, heading } = this.state;
     return (
       <div className="content">
         <Row>
           <Col md="8">
             <Card className="card-user">
               <CardHeader>
-                <CardTitle tag="h5">Create Profile</CardTitle>
+                <CardTitle tag="h5">{heading}</CardTitle>
               </CardHeader>
               <CardBody>
                 <Form>
@@ -83,75 +140,6 @@ export default class CreateContact extends Component {
                     </div>
                   </Row>
                 </Form>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md="4">
-            <Card>
-              <CardHeader>
-                <CardTitle tag="h4">Active Students</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <ul className="list-unstyled team-members">
-                  <li>
-                    <Row>
-                      <Col md="2" xs="2">
-                        <div className="avatar">
-                          <img
-                            alt="..."
-                            className="img-circle img-no-padding img-responsive"
-                            src={require("assets/img/faces/ayo-ogunseinde-2.jpg")}
-                          />
-                        </div>
-                      </Col>
-                      <Col md="7" xs="7">
-                        DJ Khaled <br />
-                        <span className="text-muted">
-                          <small>Offline</small>
-                        </span>
-                      </Col>
-                      <Col className="text-right" md="3" xs="3">
-                        <Button
-                          className="btn-round btn-icon"
-                          color="success"
-                          outline
-                          size="sm"
-                        >
-                          <i className="fa fa-envelope" />
-                        </Button>
-                      </Col>
-                    </Row>
-                  </li>
-                  <li>
-                    <Row>
-                      <Col md="2" xs="2">
-                        <div className="avatar">
-                          <img
-                            alt="..."
-                            className="img-circle img-no-padding img-responsive"
-                            src={require("assets/img/faces/joe-gardner-2.jpg")}
-                          />
-                        </div>
-                      </Col>
-                      <Col md="7" xs="7">
-                        Creative Tim <br />
-                        <span className="text-success">
-                          <small>Available</small>
-                        </span>
-                      </Col>
-                      <Col className="text-right" md="3" xs="3">
-                        <Button
-                          className="btn-round btn-icon"
-                          color="success"
-                          outline
-                          size="sm"
-                        >
-                          <i className="fa fa-envelope" />
-                        </Button>
-                      </Col>
-                    </Row>
-                  </li>
-                </ul>
               </CardBody>
             </Card>
           </Col>

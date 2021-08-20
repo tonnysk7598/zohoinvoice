@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Card, CardBody, CardTitle, Row, Col, CardFooter, Modal,
+  Card, CardBody, CardTitle, Row, Col, CardFooter,
 } from "reactstrap";
 import 'jspdf-autotable';
 import { connect } from 'react-redux';
@@ -10,11 +10,11 @@ import swal from "sweetalert";
 
 class SearchPage extends React.Component {
   state = {
-    openModal: false,
     allContacts: []
   }
 
   componentDidMount() {
+    sessionStorage.setItem("edit", false);
     this.setState({ loading: true})
     setTimeout(() => {
       this.getAllContacts()
@@ -70,8 +70,19 @@ class SearchPage extends React.Component {
     })
   }
 
+  createNewPage = () => {
+    sessionStorage.setItem("edit", false);
+    window.location = '/admin/create'
+  }
+
+  editContact = (editContact) => {
+    sessionStorage.setItem("contact", JSON.stringify(editContact));
+    sessionStorage.setItem("edit", true);
+    window.location = '/admin/create'
+  }
+
   render() {
-    const { openModal, allContacts, loading } = this.state;
+    const { allContacts, loading } = this.state;
     console.error(allContacts)
     return (
       <div className="content">
@@ -79,7 +90,7 @@ class SearchPage extends React.Component {
           <React.Fragment>
         <Row>
           <Col lg="4" md="6" sm="6">
-            <Card className="card-stats" onClick={() => this.setState({ openModal: true })} style={{ cursor: 'pointer' }}>
+            <Card className="card-stats" onClick={() => this.createNewPage()} style={{ cursor: 'pointer' }}>
               <CardBody>
                 <Row>
                   <Col md="4" xs="5">
@@ -115,7 +126,7 @@ class SearchPage extends React.Component {
                       </div>
                     </Col>
                     <Col md="8" xs="7">
-                      <div className="numbers" onClick={() => this.setState({ openModal: true })} style={{ cursor: 'pointer' }}>
+                      <div className="numbers" onClick={() => this.editContact(contact)} style={{ cursor: 'pointer' }}>
                         <p className="card-category">{contact.company_name}</p>
                         <CardTitle tag="p">{contact.contact_name}</CardTitle>
                         <p />
@@ -137,21 +148,6 @@ class SearchPage extends React.Component {
             </Col>
           )): ''}
         </Row>
-        <Modal
-          isOpen={openModal}
-          toggle={this.onCloseModal}
-          className="card-modal--primary"
-          style={{ maxWidth: '80%' }}
-        >
-          <div className="modal__header">
-            <i className="fas fa-times"><button className="lnr lnr-cross modal__close-btn" type="button" onClick={this.onCloseModal} /></i>
-            <h4 className="bold-text  modal__title">Create Contact</h4>
-          </div>
-          <div className="modal__body">
-            <hr /><br />
-
-          </div>
-        </Modal>
         </React.Fragment>
         ): <Loading />}
       </div>

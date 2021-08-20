@@ -64,7 +64,7 @@ app.post('/createNewContact', async (req, res) => {
   const { contactName, companyName } = req.body;
   const contactData = {
     contact_name: contactName,
-    companyName: companyName,
+    company_name: companyName,
   }
   console.error(contactData)
   var options =
@@ -85,13 +85,35 @@ app.post('/createNewContact', async (req, res) => {
 
 app.post('/deleteContact', async (req, res) => {
   const { contactId } = req.body;
-  console.error(contactId)
   var options =
   {
     method: 'DELETE',
     url: `${urls.contactsUrl}/${contactId}`,
     qs: { organization_id: orgId },
     headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+  };
+  request(options, function (error, response, body) { 
+    if (error) throw new Error(error);
+    res.send(response);
+  });
+});
+
+app.put('/updateContact', async (req, res) => {
+  const { contactName, companyName, contactId } = req.body;
+  const contactData = {
+    contact_name: contactName,
+    company_name: companyName,
+  }
+  console.error(contactData)
+  var options =
+  {
+    method: 'PUT',
+    url: `${urls.contactsUrl}/${contactId}`,
+    qs: { organization_id: orgId },
+    headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+    formData: {
+      JSONString: JSON.stringify(contactData)
+    }
   };
   request(options, function (error, response, body) { 
     if (error) throw new Error(error);

@@ -11,7 +11,7 @@ var routes = [
   },
   {
     path: "/create",
-    name: "Create",
+    name: "Create / Edit",
     icon: "fas fa-user-edit",
     component: Create,
     layout: "/admin",
