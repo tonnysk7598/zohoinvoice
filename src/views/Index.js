@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import Loading from "../Loading";
 import swal from "sweetalert";
 
+const capitalize = s => s && s[0].toUpperCase() + s.slice(1)
+
 class SearchPage extends React.Component {
   state = {
     allContacts: []
@@ -127,8 +129,10 @@ class SearchPage extends React.Component {
                     </Col>
                     <Col md="8" xs="7">
                       <div className="numbers" onClick={() => this.editContact(contact)} style={{ cursor: 'pointer' }}>
-                        <p className="card-category">{contact.company_name}</p>
-                        <CardTitle tag="p">{contact.contact_name}</CardTitle>
+                        <p className="card-category" style={{color: contact.status === 'active' ? 'green' : 'red'}}>
+                          {contact.status.toUpperCase()}
+                        </p>
+                        <CardTitle tag="p">{capitalize(contact.contact_name)}</CardTitle>
                         <p />
                       </div>
                     </Col>
@@ -138,7 +142,7 @@ class SearchPage extends React.Component {
                   <hr />
                   <div className="stats">
                     <i className="fas fa-envelope" /> {contact.email}<br />
-                    <i className="fas fa-address-book" /> Status: {contact.status}
+                    <i className="fas fa-address-book" /> Company: {capitalize(contact.company_name)}
                   </div>
                   <div className="text-right">
                     <i className="mt-sm-1 fas fa-trash text-danger" onClick={() => this.deleteContact(contact)} style={{ cursor: 'pointer' }} />

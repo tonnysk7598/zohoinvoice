@@ -4,23 +4,34 @@ import {
 } from "reactstrap";
 import swal from 'sweetalert';
 
+const statusOption = [
+  { label: '', value: ''},
+  { label: 'Active', value: 'Active' },
+  { label: 'Inactive', value: 'Inactive' },
+]
 export default class CreateContact extends Component {
   state = {
     contactName: '',
     companyName: '',
     email: '',
-    heading: ''
+    heading: '',
+    mobile: '',
+    selectedStatus: statusOption[0].value,
   }
 
   componentWillMount() {
     const editMode = sessionStorage.getItem("edit")
-    if(editMode === 'true'){
+    if (editMode === 'true') {
       const contact = JSON.parse(sessionStorage.getItem("contact"))
+      console.error(contact)
       this.setState({
         contactName: contact.contact_name,
         companyName: contact.company_name,
         email: contact.email,
-        heading: 'Edit Contact'
+        heading: 'Edit Contact',
+        mobile: contact.mobile,
+        status: contact.status,
+        selectedStatus: { label: contact.status, value: contact.status }
       })
     } else {
       this.setState({ heading: 'Create Contact' });
@@ -28,22 +39,26 @@ export default class CreateContact extends Component {
   }
 
   submit = async () => {
-    const { contactName, companyName } = this.state;
+    const { contactName, companyName, email, mobile, status } = this.state;
+    console.error(status)
     const editMode = sessionStorage.getItem("edit")
-    const dt = { contactName, companyName }
-    if(editMode === 'true'){
-      this.editContact(dt);
+    const handleData = { contactName, companyName, email, mobile, status }
+    if (editMode === 'true') {
+      this.editContact(handleData);
     } else {
-      this.createContact(dt);
+      this.createContact(handleData);
     }
   }
 
-  editContact = async (dt) => {
+  editContact = async (handleData) => {
     const contact = JSON.parse(sessionStorage.getItem("contact"))
     const editData = {
-      contactName: dt.contactName,
-      companyName: dt.companyName,
-      contactId: contact.contact_id
+      contactName: handleData.contactName,
+      companyName: handleData.companyName,
+      contactId: contact.contact_id,
+      email: handleData.email,
+      mobile: handleData.mobile,
+      status: handleData.status,
     }
     console.error(editData)
     const putData = await fetch('/updateContact', {
@@ -56,27 +71,27 @@ export default class CreateContact extends Component {
     })
     const res = await putData.json();
     console.error(res)
-    // if (res.statusCode === 201) {
-    //   swal({
-    //     title: 'Success',
-    //     text: 'Record Created Successfully',
-    //     icon: 'success',
-    //     button: true,
-    //   })
-    //     .then(() => {
-    //       window.location = '/'
-    //     })
-    // }
+    if (res.statusCode === 200) {
+      swal({
+        title: 'Success',
+        text: 'Record Updated Successfully',
+        icon: 'success',
+        button: true,
+      })
+        .then(() => {
+          window.location = '/'
+        })
+    }
   }
 
-  createContact = async (dt) => {
+  createContact = async (handleData) => {
     const postData = await fetch('/createNewContact', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       method: 'post',
-      body: JSON.stringify(dt)
+      body: JSON.stringify(handleData)
     })
     const res = await postData.json();
     if (res.statusCode === 201) {
@@ -92,8 +107,45 @@ export default class CreateContact extends Component {
     }
   }
 
+  changeStatus = async () => {
+    const { status } = this.state;
+    console.error(status)
+    const contact = JSON.parse(sessionStorage.getItem("contact"))
+    swal({
+      title: 'Info',
+      text: 'Are you sure? You are trying to change the status of the contact.',
+      icon: 'info',
+      buttons: ['No', 'Yes Proceed'],
+    })
+      .then(async (proceed) => {
+        if(proceed) {
+          const updateData = {
+            status: status === 'active' ? 'inactive' : 'active',
+            contactId: contact.contact_id,
+          }
+          console.error(updateData)
+        const postData = await fetch('/updateStatus', {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'post',
+          body: JSON.stringify(updateData)
+        })
+        const res = await postData.json();
+        console.error(res)
+            //     .then(() => {
+    //       window.location = '/'
+    //     })
+      }
+    })
+  }
+
   render() {
-    const { contactName, companyName, heading } = this.state;
+    const {
+      contactName, companyName, heading, email, mobile, status
+    } = this.state;
+    const editMode = sessionStorage.getItem("edit")
     return (
       <div className="content">
         <Row>
@@ -129,20 +181,87 @@ export default class CreateContact extends Component {
                     </Col>
                   </Row>
                   <Row>
+                    <Col className="pr-1" md="6">
+                      <FormGroup>
+                        <label>Email</label>
+                        <Input
+                          placeholder="abc@example.com"
+                          type="text"
+                          value={email}
+                          onChange={(e) => this.setState({ email: e.target.value })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="6">
+                      <FormGroup>
+                        <label>Mobile</label>
+                        <Input
+                          placeholder="xxxxx xxxxx"
+                          type="text"
+                          maxlength="10"
+                          value={mobile}
+                          onChange={(e) => this.setState({ mobile: e.target.value.replace(/\D/, '') })}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
                     <div className="update ml-auto mr-auto">
                       <Button
                         className="btn-round"
                         color="primary"
                         onClick={() => this.submit()}
                       >
-                        Update Profile
+                        {editMode === 'true' ? 'Update Contact' : 'Creact Contact'}
                       </Button>
                     </div>
+                    {editMode === 'true' && (
+                    <div className="update ml-auto mr-auto">
+                      <Button
+                        className="btn-round"
+                        color="primary"
+                        onClick={() => this.changeStatus()}
+                      >
+                        {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
+                      </Button>
+                    </div>
+                    )}
                   </Row>
                 </Form>
               </CardBody>
             </Card>
           </Col>
+          {editMode === 'true' && (
+            <Col md="4" lg={4}>
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h4">Change Status</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <Col>
+                    <FormGroup>
+                      <div className="update ml-auto mr-auto">
+                        <Button
+                          className="btn-round"
+                          color="primary"
+                          onClick={() => this.changeStatus()}
+                        >
+                          {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
+                        </Button>
+                      </div>
+                      {/* <Input
+                        type="select"
+                        value={selectedStatus}
+                        onChange={(e) => this.changeStatus(e)}
+                      >
+                        {statusOption.map(d => (<option key={d.key} value={d.value}>{d.label}</option>))}
+                      </Input> */}
+                    </FormGroup>
+                  </Col>
+                </CardBody>
+              </Card>
+            </Col>
+          )}
         </Row>
       </div>
     )
