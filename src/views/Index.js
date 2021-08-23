@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Card, CardBody, CardTitle, Row, Col, CardFooter,
+  Card, CardBody, CardTitle, Row, Col, CardFooter, UncontrolledTooltip,
 } from "reactstrap";
 import 'jspdf-autotable';
 import { connect } from 'react-redux';
@@ -17,6 +17,7 @@ class SearchPage extends React.Component {
 
   componentDidMount() {
     sessionStorage.setItem("edit", false);
+    sessionStorage.setItem("clone", false);
     this.setState({ loading: true})
     setTimeout(() => {
       this.getAllContacts()
@@ -74,12 +75,19 @@ class SearchPage extends React.Component {
 
   createNewPage = () => {
     sessionStorage.setItem("edit", false);
+    sessionStorage.setItem("clone", false);
     window.location = '/admin/create'
   }
 
-  editContact = (editContact) => {
-    sessionStorage.setItem("contact", JSON.stringify(editContact));
+  editContact = (editData) => {
+    sessionStorage.setItem("contact", JSON.stringify(editData));
     sessionStorage.setItem("edit", true);
+    window.location = '/admin/create'
+  }
+
+  cloneContact = (cloneData) => {
+    sessionStorage.setItem("contact", JSON.stringify(cloneData));
+    sessionStorage.setItem("clone", true);
     window.location = '/admin/create'
   }
 
@@ -141,12 +149,20 @@ class SearchPage extends React.Component {
                 <CardFooter>
                   <hr />
                   <div className="stats">
-                    <i className="fas fa-envelope" /> {contact.email}<br />
-                    <i className="fas fa-address-book" /> Company: {capitalize(contact.company_name)}
+                    <i className="fas fa-envelope" /> {contact.email || '---'}<br />
+                    <i className="fas fa-address-book" /> Company: {capitalize(contact.company_name) || '---'}
                   </div>
                   <div className="text-right">
-                    <i className="mt-sm-1 fas fa-trash text-danger" onClick={() => this.deleteContact(contact)} style={{ cursor: 'pointer' }} />
+                    <i id="clone" className="mt-sm-2 fas fa-copy text-info" onClick={() => this.cloneContact(contact)} style={{ cursor: 'pointer' }} />
+                    &ensp;&ensp;&ensp;
+                    <i id="trash" className="mt-sm-2 fas fa-trash text-danger" onClick={() => this.deleteContact(contact)} style={{ cursor: 'pointer' }} />
                   </div>
+                  <UncontrolledTooltip  placement="bottom" target="trash">
+                    Delete
+                  </UncontrolledTooltip>
+                  <UncontrolledTooltip  placement="bottom" target="clone">
+                    Clone
+                  </UncontrolledTooltip>
                 </CardFooter>
               </Card>
             </Col>

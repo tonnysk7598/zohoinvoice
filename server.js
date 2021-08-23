@@ -129,28 +129,24 @@ app.post('/updateStatus', async (req, res) => {
     var options =
     {
       method: 'POST',
-      url: `https://invoice.zoho.com/api/v3/contacts/${contactId}/active`,
+      url: `${config.CONTACTS_MAIN_URL}/${contactId}/active`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
     };
-    console.error(options)
     request(options, function (error, response, body) { 
       if (error) throw new Error(error);
-      console.error(error)
       res.send(response);
     });
   } else {
     var option =
     {
       method: 'POST',
-      url: `https://invoice.zoho.com/api/v3/contacts/${contactId}/inactive`,
+      url: `${config.CONTACTS_MAIN_URL}/${contactId}/inactive`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
     };
-    console.error(option)
     request(option, function (error, response, body) { 
       if (error) throw new Error(error);
-      console.error(body)
       res.send(response);
     });
   }

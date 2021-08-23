@@ -4,11 +4,6 @@ import {
 } from "reactstrap";
 import swal from 'sweetalert';
 
-const statusOption = [
-  { label: '', value: ''},
-  { label: 'Active', value: 'Active' },
-  { label: 'Inactive', value: 'Inactive' },
-]
 export default class CreateContact extends Component {
   state = {
     contactName: '',
@@ -16,14 +11,13 @@ export default class CreateContact extends Component {
     email: '',
     heading: '',
     mobile: '',
-    selectedStatus: statusOption[0].value,
   }
 
   componentWillMount() {
     const editMode = sessionStorage.getItem("edit")
+    const cloneMode = sessionStorage.getItem("clone")
     if (editMode === 'true') {
       const contact = JSON.parse(sessionStorage.getItem("contact"))
-      console.error(contact)
       this.setState({
         contactName: contact.contact_name,
         companyName: contact.company_name,
@@ -31,7 +25,16 @@ export default class CreateContact extends Component {
         heading: 'Edit Contact',
         mobile: contact.mobile,
         status: contact.status,
-        selectedStatus: { label: contact.status, value: contact.status }
+      })
+    } else if(cloneMode === 'true') {
+      const contact = JSON.parse(sessionStorage.getItem("contact"))
+      this.setState({
+        contactName: contact.contact_name,
+        companyName: contact.company_name,
+        email: contact.email,
+        heading: 'Clone Contact',
+        mobile: contact.mobile,
+        status: contact.status,
       })
     } else {
       this.setState({ heading: 'Create Contact' });
@@ -40,7 +43,6 @@ export default class CreateContact extends Component {
 
   submit = async () => {
     const { contactName, companyName, email, mobile, status } = this.state;
-    console.error(status)
     const editMode = sessionStorage.getItem("edit")
     const handleData = { contactName, companyName, email, mobile, status }
     if (editMode === 'true') {
@@ -81,6 +83,9 @@ export default class CreateContact extends Component {
         .then(() => {
           window.location = '/'
         })
+    } else {
+      const errorMesage = JSON.parse(res.body);
+      swal('Error', `${errorMesage.message}`, 'error')
     }
   }
 
@@ -104,6 +109,9 @@ export default class CreateContact extends Component {
         .then(() => {
           window.location = '/'
         })
+    } else {
+      const errorMesage = JSON.parse(res.body);
+      swal('Error', `${errorMesage.message}`, 'error')
     }
   }
 
@@ -112,8 +120,8 @@ export default class CreateContact extends Component {
     console.error(status)
     const contact = JSON.parse(sessionStorage.getItem("contact"))
     swal({
-      title: 'Info',
-      text: 'Are you sure? You are trying to change the status of the contact.',
+      title: 'Are you sure?',
+      text: 'You are trying to change the status of the contact..!',
       icon: 'info',
       buttons: ['No', 'Yes Proceed'],
     })
@@ -134,9 +142,20 @@ export default class CreateContact extends Component {
         })
         const res = await postData.json();
         console.error(res)
-            //     .then(() => {
-    //       window.location = '/'
-    //     })
+        if(res === 200){
+          swal({
+            title: 'Success',
+            text: 'Record Updated Successfully',
+            icon: 'success',
+            button: true,
+          })
+            .then(() => {
+              window.location = '/'
+            })
+        } else {
+          const errorMesage = JSON.parse(res.body);
+          swal('Error', `${errorMesage.message}`, 'error')
+        }
       }
     })
   }
@@ -216,52 +235,23 @@ export default class CreateContact extends Component {
                       </Button>
                     </div>
                     {editMode === 'true' && (
-                    <div className="update ml-auto mr-auto">
-                      <Button
-                        className="btn-round"
-                        color="primary"
-                        onClick={() => this.changeStatus()}
-                      >
-                        {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
-                      </Button>
-                    </div>
+                      <React.Fragment>
+                        <div className="update ml-auto mr-auto">
+                          <Button
+                            className="btn-round"
+                            color="secondary"
+                            onClick={() => this.changeStatus()}
+                          >
+                            {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
+                          </Button>
+                        </div>
+                      </React.Fragment>
                     )}
                   </Row>
                 </Form>
               </CardBody>
             </Card>
           </Col>
-          {editMode === 'true' && (
-            <Col md="4" lg={4}>
-              <Card>
-                <CardHeader>
-                  <CardTitle tag="h4">Change Status</CardTitle>
-                </CardHeader>
-                <CardBody>
-                  <Col>
-                    <FormGroup>
-                      <div className="update ml-auto mr-auto">
-                        <Button
-                          className="btn-round"
-                          color="primary"
-                          onClick={() => this.changeStatus()}
-                        >
-                          {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
-                        </Button>
-                      </div>
-                      {/* <Input
-                        type="select"
-                        value={selectedStatus}
-                        onChange={(e) => this.changeStatus(e)}
-                      >
-                        {statusOption.map(d => (<option key={d.key} value={d.value}>{d.label}</option>))}
-                      </Input> */}
-                    </FormGroup>
-                  </Col>
-                </CardBody>
-              </Card>
-            </Col>
-          )}
         </Row>
       </div>
     )
