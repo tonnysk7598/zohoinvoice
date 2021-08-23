@@ -62,7 +62,6 @@ export default class CreateContact extends Component {
       mobile: handleData.mobile,
       status: handleData.status,
     }
-    console.error(editData)
     const putData = await fetch('/updateContact', {
       headers: {
         'Accept': 'application/json',
@@ -72,7 +71,6 @@ export default class CreateContact extends Component {
       body: JSON.stringify(editData)
     })
     const res = await putData.json();
-    console.error(res)
     if (res.statusCode === 200) {
       swal({
         title: 'Success',
@@ -117,7 +115,6 @@ export default class CreateContact extends Component {
 
   changeStatus = async () => {
     const { status } = this.state;
-    console.error(status)
     const contact = JSON.parse(sessionStorage.getItem("contact"))
     swal({
       title: 'Are you sure?',
@@ -131,7 +128,6 @@ export default class CreateContact extends Component {
             status: status === 'active' ? 'inactive' : 'active',
             contactId: contact.contact_id,
           }
-          console.error(updateData)
         const postData = await fetch('/updateStatus', {
           headers: {
             'Accept': 'application/json',
@@ -141,7 +137,6 @@ export default class CreateContact extends Component {
           body: JSON.stringify(updateData)
         })
         const res = await postData.json();
-        console.error(res)
         if(res === 200){
           swal({
             title: 'Success',

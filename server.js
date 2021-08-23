@@ -32,8 +32,9 @@ app.get('/authenticate', async (req, res) => {
     if (allTokens.refresh_token) {
       oAuthRefToken = allTokens.refresh_token
       getAccessToken(allTokens.refresh_token)
+    } else {
+      res.send({code: 400, error: 'Update auth token and re-run the application'});
     }
-    res.send({ express: 'YOUR EXPRESS BACKEND IS CONNECTED TO REACT' });
   } else {
     getAccessToken(oAuthRefToken)
   }

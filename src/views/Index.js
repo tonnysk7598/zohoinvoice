@@ -93,7 +93,6 @@ class SearchPage extends React.Component {
 
   render() {
     const { allContacts, loading } = this.state;
-    console.error(allContacts)
     return (
       <div className="content">
         {!loading ? (
