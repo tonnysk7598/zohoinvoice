@@ -7,7 +7,7 @@
             -> enter scope description
         
         * copy the generated authentication code, Client Id, Client Secret key and replace on the config.json file at root directory
-        * also copy the oganization Id from the zoho ivoice account page and update the value at the confige.json file
+        * also copy the oganization Id from the zoho ivoice account page and update the value at the config.json file
 
             {
                 "SELF_CLIENT_CLIENT_ID": "Client Id",
