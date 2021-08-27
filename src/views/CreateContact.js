@@ -137,10 +137,11 @@ export default class CreateContact extends Component {
           body: JSON.stringify(updateData)
         })
         const res = await postData.json();
-        if(res === 200){
+        if(res.statusCode === 200){
+          const successMesage = JSON.parse(res.body);
           swal({
             title: 'Success',
-            text: 'Record Updated Successfully',
+            text: `${successMesage.message}`,
             icon: 'success',
             button: true,
           })

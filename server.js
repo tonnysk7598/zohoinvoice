@@ -125,7 +125,6 @@ app.put('/updateContact', async (req, res) => {
 
 app.post('/updateStatus', async (req, res) => {
   const { status, contactId } = req.body;
-  console.error(contactId)
   if(status === 'active') {
     var options =
     {
@@ -133,6 +132,9 @@ app.post('/updateStatus', async (req, res) => {
       url: `${config.CONTACTS_MAIN_URL}/${contactId}/active`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+      formData: {
+        JSONString: JSON.stringify(req.body)
+      }
     };
     request(options, function (error, response, body) { 
       if (error) throw new Error(error);
@@ -145,6 +147,9 @@ app.post('/updateStatus', async (req, res) => {
       url: `${config.CONTACTS_MAIN_URL}/${contactId}/inactive`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+      formData: {
+        JSONString: JSON.stringify(req.body)
+      }
     };
     request(option, function (error, response, body) { 
       if (error) throw new Error(error);
