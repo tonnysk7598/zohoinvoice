@@ -148,7 +148,7 @@ class SearchPage extends React.Component {
                 <CardFooter>
                   <hr />
                   <div className="stats">
-                    <i className="fas fa-envelope" /> {contact.email || '---'}<br />
+                    <i className="fas fa-mobile" /> Phone: {contact.mobile || '---'}<br />
                     <i className="fas fa-address-book" /> Company: {capitalize(contact.company_name) || '---'}
                   </div>
                   <div className="text-right">

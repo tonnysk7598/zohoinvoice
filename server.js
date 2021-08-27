@@ -63,11 +63,11 @@ app.get('/getAllContacts', async (req, res) => {
 });
 
 app.post('/createNewContact', async (req, res) => {
-  const { contactName, companyName, email, mobile } = req.body;
+  const { contactName, companyName, mobile } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
-    "contact_persons": [{ email, mobile }],
+    "contact_persons": [{ mobile }],
   }
   var options =
   {
@@ -101,11 +101,11 @@ app.post('/deleteContact', async (req, res) => {
 });
 
 app.put('/updateContact', async (req, res) => {
-  const { contactName, companyName, contactId, email, mobile } = req.body;
+  const { contactName, companyName, contactId, mobile } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
-    "contact_persons": [{ email, mobile }],
+    "contact_persons": [{ mobile }],
   }
   var options =
   {

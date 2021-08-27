@@ -1,16 +1,18 @@
 import React, { Component } from 'react'
 import {
   Button, Card, CardHeader, CardBody, CardTitle, FormGroup, Form, Input, Row, Col,
+  Badge,
 } from "reactstrap";
+import CardSubtitle from 'reactstrap/lib/CardSubtitle';
 import swal from 'sweetalert';
 
 export default class CreateContact extends Component {
   state = {
     contactName: '',
     companyName: '',
-    email: '',
     heading: '',
     mobile: '',
+    status: 'active',
   }
 
   componentWillMount() {
@@ -21,7 +23,6 @@ export default class CreateContact extends Component {
       this.setState({
         contactName: contact.contact_name,
         companyName: contact.company_name,
-        email: contact.email,
         heading: 'Edit Contact',
         mobile: contact.mobile,
         status: contact.status,
@@ -31,7 +32,6 @@ export default class CreateContact extends Component {
       this.setState({
         contactName: contact.contact_name,
         companyName: contact.company_name,
-        email: contact.email,
         heading: 'Clone Contact',
         mobile: contact.mobile,
         status: contact.status,
@@ -42,9 +42,9 @@ export default class CreateContact extends Component {
   }
 
   submit = async () => {
-    const { contactName, companyName, email, mobile, status } = this.state;
+    const { contactName, companyName, mobile, status } = this.state;
     const editMode = sessionStorage.getItem("edit")
-    const handleData = { contactName, companyName, email, mobile, status }
+    const handleData = { contactName, companyName, mobile, status }
     if (editMode === 'true') {
       this.editContact(handleData);
     } else {
@@ -58,7 +58,6 @@ export default class CreateContact extends Component {
       contactName: handleData.contactName,
       companyName: handleData.companyName,
       contactId: contact.contact_id,
-      email: handleData.email,
       mobile: handleData.mobile,
       status: handleData.status,
     }
@@ -146,7 +145,11 @@ export default class CreateContact extends Component {
             button: true,
           })
             .then(() => {
-              window.location = '/'
+              if(status === 'active') {
+                window.location = '/'
+              } else {
+                this.setState({ status: 'active'})
+              }
             })
         } else {
           const errorMesage = JSON.parse(res.body);
@@ -158,7 +161,7 @@ export default class CreateContact extends Component {
 
   render() {
     const {
-      contactName, companyName, heading, email, mobile, status
+      contactName, companyName, heading, mobile, status
     } = this.state;
     const editMode = sessionStorage.getItem("edit")
     return (
@@ -168,6 +171,9 @@ export default class CreateContact extends Component {
             <Card className="card-user">
               <CardHeader>
                 <CardTitle tag="h5">{heading}</CardTitle>
+                {status === 'inactive' && (
+                  <CardSubtitle tag="h6"><Badge>Note: Mark the contact status as active to edit</Badge></CardSubtitle>
+                )}
               </CardHeader>
               <CardBody>
                 <Form>
@@ -198,17 +204,6 @@ export default class CreateContact extends Component {
                   <Row>
                     <Col className="pr-1" md="6">
                       <FormGroup>
-                        <label>Email</label>
-                        <Input
-                          placeholder="abc@example.com"
-                          type="text"
-                          value={email}
-                          onChange={(e) => this.setState({ email: e.target.value })}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pr-1" md="6">
-                      <FormGroup>
                         <label>Mobile</label>
                         <Input
                           placeholder="xxxxx xxxxx"
@@ -226,6 +221,7 @@ export default class CreateContact extends Component {
                         className="btn-round"
                         color="primary"
                         onClick={() => this.submit()}
+                        disabled={status === 'inactive' ? true : false }
                       >
                         {editMode === 'true' ? 'Update Contact' : 'Creact Contact'}
                       </Button>
