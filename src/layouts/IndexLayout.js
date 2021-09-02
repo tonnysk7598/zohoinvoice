@@ -5,13 +5,16 @@ import { Route, Switch } from "react-router-dom";
 
 import DemoNavbar from "components/Navbars/DemoNavbar.js";
 import Footer from "components/Footer/Footer.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-
-import routes from "routes.js";
+import MainPage from "views/MainPage";
+import EditContact from "views/EditContact";
+import CreateContact from "views/CreateContact";
+import DetailsView from "views/DetailsView";
+import ErrorPage from "views/ErrorPage";
+import CloneContact from "views/CloneContact";
 
 var ps;
 
-class Dashboard extends React.Component {
+class IndexLayout extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,24 +50,15 @@ class Dashboard extends React.Component {
   render() {
     return (
       <div className="wrapper">
-        <Sidebar
-          {...this.props}
-          routes={routes}
-          bgColor={this.state.backgroundColor}
-          activeColor={this.state.activeColor}
-        />
         <div className="main-panel" ref={this.mainPanel}>
-          <DemoNavbar {...this.props} />
+          <DemoNavbar />
           <Switch>
-            {routes.map((prop, key) => {
-              return (
-                <Route
-                  path={prop.layout + prop.path}
-                  component={prop.component}
-                  key={key}
-                />
-              );
-            })}
+            <Route exact path="/" component={MainPage} />
+            <Route path="/create" component={CreateContact} />
+            <Route path="/edit/:id" component={EditContact} />
+            <Route path="/view/:id" component={DetailsView} />
+            <Route path="/clone/:id" component={CloneContact} />
+            <Route component={ErrorPage} />
           </Switch>
           <Footer fluid />
         </div>
@@ -73,4 +67,4 @@ class Dashboard extends React.Component {
   }
 }
 
-export default Dashboard;
+export default IndexLayout;

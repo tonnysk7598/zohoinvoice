@@ -14,7 +14,7 @@ const client_secret = config.SELF_CLIENT_CLIENT_SECRET;
 const code = config.SELF_CLIENT_TEMPORARY_GRANT_TOKEN;
 const redirect = config.REDIRECT_URI;
 const grand = config.GRAND_TYPE;
-const mainUrl = 'https://accounts.zoho.com/oauth/v2/token';
+const mainUrl = config.OAUTH_MAIN_URL;
 const orgId = config.ORG_ID;
 
 var oAuthRefToken = null;
@@ -62,6 +62,24 @@ app.get('/getAllContacts', async (req, res) => {
     });
 });
 
+app.get('/getContact/:id', async (req, res) => {
+  const { id } = req.params
+  var options =
+  {
+    method: 'GET',
+    url: `${config.CONTACTS_MAIN_URL}/${id}`,
+    qs: { organization_id: orgId },
+    headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
+    formData: {
+      JSONString: JSON.stringify(id)
+    }
+  };
+  request(options, function (error, response, body) {
+    if (error) throw new Error(error);
+    res.send(response);
+  });
+});
+
 app.post('/createNewContact', async (req, res) => {
   const { contactName, companyName, mobile } = req.body;
   const contactData = {
@@ -85,12 +103,13 @@ app.post('/createNewContact', async (req, res) => {
   });
 });
 
-app.post('/deleteContact', async (req, res) => {
-  const { contactId } = req.body;
+app.delete('/deleteContact/:id', async (req, res) => {
+  const { id } = req.params
+  console.error(id)
   var options =
   {
     method: 'DELETE',
-    url: `${config.CONTACTS_MAIN_URL}/${contactId}`,
+    url: `${config.CONTACTS_MAIN_URL}/${id}`,
     qs: { organization_id: orgId },
     headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
   };
@@ -100,8 +119,9 @@ app.post('/deleteContact', async (req, res) => {
   });
 });
 
-app.put('/updateContact', async (req, res) => {
-  const { contactName, companyName, contactId, mobile } = req.body;
+app.put('/updateContact/:id', async (req, res) => {
+  const { id } = req.params
+  const { contactName, companyName, mobile } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
@@ -110,7 +130,7 @@ app.put('/updateContact', async (req, res) => {
   var options =
   {
     method: 'PUT',
-    url: `${config.CONTACTS_MAIN_URL}/${contactId}`,
+    url: `${config.CONTACTS_MAIN_URL}/${id}`,
     qs: { organization_id: orgId },
     headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
     formData: {
@@ -123,17 +143,18 @@ app.put('/updateContact', async (req, res) => {
   });
 });
 
-app.post('/updateStatus', async (req, res) => {
-  const { status, contactId } = req.body;
+app.post('/updateStatus/:id', async (req, res) => {
+  const { id } = req.params
+  const { status } = req.body;
   if(status === 'active') {
     var options =
     {
       method: 'POST',
-      url: `${config.CONTACTS_MAIN_URL}/${contactId}/active`,
+      url: `${config.CONTACTS_MAIN_URL}/${id}/active`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
       formData: {
-        JSONString: JSON.stringify(req.body)
+        JSONString: JSON.stringify(id)
       }
     };
     request(options, function (error, response, body) { 
@@ -144,11 +165,11 @@ app.post('/updateStatus', async (req, res) => {
     var option =
     {
       method: 'POST',
-      url: `${config.CONTACTS_MAIN_URL}/${contactId}/inactive`,
+      url: `${config.CONTACTS_MAIN_URL}/${id}/inactive`,
       qs: { organization_id: orgId },
       headers: { 'Authorization': `Zoho-oauthtoken ${accessToken}`, 'content-type': 'multipart/form-data;' },
       formData: {
-        JSONString: JSON.stringify(req.body)
+        JSONString: JSON.stringify(id)
       }
     };
     request(option, function (error, response, body) { 

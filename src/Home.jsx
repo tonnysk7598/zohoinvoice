@@ -1,9 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import React, { Component } from 'react';
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 
 import LoadingPage from './Loading';
-import AdminLayout from "layouts/Admin.js";
+import IndexLayout from 'layouts/IndexLayout';
 
 import "bootstrap/dist/css/bootstrap.css";
 import "assets/scss/paper-dashboard.scss?v=1.2.0";
@@ -29,8 +29,7 @@ class Home extends Component {
     return (
         <Router history={hist}>
         <Switch>
-          <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-          <Redirect to="/admin/home" />
+          <Route render={(props) => <IndexLayout {...props} />} />
         </Switch>
       </Router>
     );

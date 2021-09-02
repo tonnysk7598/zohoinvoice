@@ -10,83 +10,12 @@ export default class CreateContact extends Component {
   state = {
     contactName: '',
     companyName: '',
-    heading: '',
     mobile: '',
-    status: 'active',
-  }
-
-  componentWillMount() {
-    const editMode = sessionStorage.getItem("edit")
-    const cloneMode = sessionStorage.getItem("clone")
-    if (editMode === 'true') {
-      const contact = JSON.parse(sessionStorage.getItem("contact"))
-      this.setState({
-        contactName: contact.contact_name,
-        companyName: contact.company_name,
-        heading: 'Edit Contact',
-        mobile: contact.mobile,
-        status: contact.status,
-      })
-    } else if(cloneMode === 'true') {
-      const contact = JSON.parse(sessionStorage.getItem("contact"))
-      this.setState({
-        contactName: contact.contact_name,
-        companyName: contact.company_name,
-        heading: 'Clone Contact',
-        mobile: contact.mobile,
-        status: contact.status,
-      })
-    } else {
-      this.setState({ heading: 'Create Contact' });
-    }
   }
 
   submit = async () => {
-    const { contactName, companyName, mobile, status } = this.state;
-    const editMode = sessionStorage.getItem("edit")
-    const handleData = { contactName, companyName, mobile, status }
-    if (editMode === 'true') {
-      this.editContact(handleData);
-    } else {
-      this.createContact(handleData);
-    }
-  }
-
-  editContact = async (handleData) => {
-    const contact = JSON.parse(sessionStorage.getItem("contact"))
-    const editData = {
-      contactName: handleData.contactName,
-      companyName: handleData.companyName,
-      contactId: contact.contact_id,
-      mobile: handleData.mobile,
-      status: handleData.status,
-    }
-    const putData = await fetch('/updateContact', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: 'put',
-      body: JSON.stringify(editData)
-    })
-    const res = await putData.json();
-    if (res.statusCode === 200) {
-      swal({
-        title: 'Success',
-        text: 'Record Updated Successfully',
-        icon: 'success',
-        button: true,
-      })
-        .then(() => {
-          window.location = '/'
-        })
-    } else {
-      const errorMesage = JSON.parse(res.body);
-      swal('Error', `${errorMesage.message}`, 'error')
-    }
-  }
-
-  createContact = async (handleData) => {
+    const { contactName, companyName, mobile } = this.state;
+    const handleData = { contactName, companyName, mobile }
     const postData = await fetch('/createNewContact', {
       headers: {
         'Accept': 'application/json',
@@ -112,68 +41,17 @@ export default class CreateContact extends Component {
     }
   }
 
-  changeStatus = async () => {
-    const { status } = this.state;
-    const contact = JSON.parse(sessionStorage.getItem("contact"))
-    swal({
-      title: 'Are you sure?',
-      text: 'You are trying to change the status of the contact..!',
-      icon: 'info',
-      buttons: ['No', 'Yes Proceed'],
-    })
-      .then(async (proceed) => {
-        if(proceed) {
-          const updateData = {
-            status: status === 'active' ? 'inactive' : 'active',
-            contactId: contact.contact_id,
-          }
-        const postData = await fetch('/updateStatus', {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: 'post',
-          body: JSON.stringify(updateData)
-        })
-        const res = await postData.json();
-        if(res.statusCode === 200){
-          const successMesage = JSON.parse(res.body);
-          swal({
-            title: 'Success',
-            text: `${successMesage.message}`,
-            icon: 'success',
-            button: true,
-          })
-            .then(() => {
-              if(status === 'active') {
-                window.location = '/'
-              } else {
-                this.setState({ status: 'active'})
-              }
-            })
-        } else {
-          const errorMesage = JSON.parse(res.body);
-          swal('Error', `${errorMesage.message}`, 'error')
-        }
-      }
-    })
-  }
-
   render() {
-    const {
-      contactName, companyName, heading, mobile, status
-    } = this.state;
-    const editMode = sessionStorage.getItem("edit")
+    const { contactName, companyName, mobile } = this.state;
     return (
       <div className="content">
         <Row>
+          <Col md="2" />
           <Col md="8">
             <Card className="card-user">
               <CardHeader>
-                <CardTitle tag="h5">{heading}</CardTitle>
-                {status === 'inactive' && (
-                  <CardSubtitle tag="h6"><Badge>Note: Mark the contact status as active to edit</Badge></CardSubtitle>
-                )}
+                <CardTitle tag="h5">Create</CardTitle>
+                <CardSubtitle tag="h6"><Badge>Create new contact</Badge></CardSubtitle>
               </CardHeader>
               <CardBody>
                 <Form>
@@ -219,31 +97,25 @@ export default class CreateContact extends Component {
                     <div className="update ml-auto mr-auto">
                       <Button
                         className="btn-round"
+                        color="secondary"
+                        href="/"
+                      >
+                        Close
+                      </Button>
+                      <Button
+                        className="btn-round"
                         color="primary"
                         onClick={() => this.submit()}
-                        disabled={status === 'inactive' ? true : false }
                       >
-                        {editMode === 'true' ? 'Update Contact' : 'Creact Contact'}
+                        Creact Contact
                       </Button>
                     </div>
-                    {editMode === 'true' && (
-                      <React.Fragment>
-                        <div className="update ml-auto mr-auto">
-                          <Button
-                            className="btn-round"
-                            color="secondary"
-                            onClick={() => this.changeStatus()}
-                          >
-                            {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
-                          </Button>
-                        </div>
-                      </React.Fragment>
-                    )}
                   </Row>
                 </Form>
               </CardBody>
             </Card>
           </Col>
+          <Col md="2" />
         </Row>
       </div>
     )

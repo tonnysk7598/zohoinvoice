@@ -7,17 +7,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loading from "../Loading";
 import swal from "sweetalert";
+import { Link } from "react-router-dom";
 
 const capitalize = s => s && s[0].toUpperCase() + s.slice(1)
 
-class SearchPage extends React.Component {
+class MainPage extends React.Component {
   state = {
     allContacts: []
   }
 
   componentDidMount() {
-    sessionStorage.setItem("edit", false);
-    sessionStorage.setItem("clone", false);
     this.setState({ loading: true})
     setTimeout(() => {
       this.getAllContacts()
@@ -28,6 +27,7 @@ class SearchPage extends React.Component {
     this.setState({ loading: true})
     const response = await fetch('/getAllContacts');
     const contactsResponse = await response.json();
+    console.error(contactsResponse)
     this.setState({ allContacts: contactsResponse, loading: false });
   }
   
@@ -36,9 +36,7 @@ class SearchPage extends React.Component {
   }
 
   deleteContact = (contactInfo) => {
-    const data = {
-      contactId: contactInfo.contact_id
-    }
+    const { contact_id } = contactInfo;
     swal({
       title: 'Delete contact? Are you sure?',
       text: 'Once deleted, you will not be able to recover this data',
@@ -49,13 +47,12 @@ class SearchPage extends React.Component {
     .then(async (willDelete) => {
       if (willDelete) {
         this.setState({ loading: true });
-        const postData = await fetch('/deleteContact', {
+        const postData = await fetch(`/deleteContact/${contact_id}`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           },
-          method: 'post',
-          body: JSON.stringify(data)
+          method: 'delete',
         })
         await postData.json();
         swal({
@@ -74,21 +71,11 @@ class SearchPage extends React.Component {
   }
 
   createNewPage = () => {
-    sessionStorage.setItem("edit", false);
-    sessionStorage.setItem("clone", false);
-    window.location = '/admin/create'
+    window.location = '/create'
   }
-
-  editContact = (editData) => {
-    sessionStorage.setItem("contact", JSON.stringify(editData));
-    sessionStorage.setItem("edit", true);
-    window.location = '/admin/create'
-  }
-
-  cloneContact = (cloneData) => {
-    sessionStorage.setItem("contact", JSON.stringify(cloneData));
-    sessionStorage.setItem("clone", true);
-    window.location = '/admin/create'
+  
+  viewContact = (contact) => {
+    window.location = `/view/${contact.contact_id}`
   }
 
   render() {
@@ -98,7 +85,7 @@ class SearchPage extends React.Component {
         {!loading ? (
           <React.Fragment>
         <Row>
-          <Col lg="4" md="6" sm="6">
+          <Col lg="3" md="5" sm="5">
             <Card className="card-stats" onClick={() => this.createNewPage()} style={{ cursor: 'pointer' }}>
               <CardBody>
                 <Row>
@@ -125,7 +112,7 @@ class SearchPage extends React.Component {
             </Card>
           </Col>
           {allContacts && allContacts.length ? allContacts.map(contact => (
-            <Col lg="4" md="6" sm="6">
+            <Col lg="3" md="5" sm="5">
               <Card className="card-stats">
                 <CardBody>
                   <Row>
@@ -135,7 +122,7 @@ class SearchPage extends React.Component {
                       </div>
                     </Col>
                     <Col md="8" xs="7">
-                      <div className="numbers" onClick={() => this.editContact(contact)} style={{ cursor: 'pointer' }}>
+                      <div className="numbers" onClick={() => this.viewContact(contact)} style={{ cursor: 'pointer' }}>
                         <p className="card-category" style={{color: contact.status === 'active' ? 'green' : 'red'}}>
                           {contact.status.toUpperCase()}
                         </p>
@@ -152,20 +139,32 @@ class SearchPage extends React.Component {
                     <i className="fas fa-address-book" /> Company: {capitalize(contact.company_name) || '---'}
                   </div>
                   <div className="text-right">
-                    <i id="clone" className="mt-sm-2 fas fa-copy text-info" onClick={() => this.cloneContact(contact)} style={{ cursor: 'pointer' }} />
+                    <Link to={`/edit/${contact.contact_id}`}>
+                      <i id="edit" className="mt-sm-2 fas fa-edit text-success" />
+                    </Link>
+                    &ensp;&ensp;&ensp;
+                    <Link to={`/clone/${contact.contact_id}`}>
+                      <i id="clone" className="mt-sm-2 fas fa-copy text-info" />
+                    </Link>
                     &ensp;&ensp;&ensp;
                     <i id="trash" className="mt-sm-2 fas fa-trash text-danger" onClick={() => this.deleteContact(contact)} style={{ cursor: 'pointer' }} />
                   </div>
-                  <UncontrolledTooltip  placement="bottom" target="trash">
-                    Delete
+                  <UncontrolledTooltip  placement="bottom" target="edit">
+                    Edit
                   </UncontrolledTooltip>
                   <UncontrolledTooltip  placement="bottom" target="clone">
                     Clone
+                  </UncontrolledTooltip>
+                  <UncontrolledTooltip  placement="bottom" target="trash">
+                    Delete
                   </UncontrolledTooltip>
                 </CardFooter>
               </Card>
             </Col>
           )): ''}
+          {/* {selectedContact && (
+            
+          )} */}
         </Row>
         </React.Fragment>
         ): <Loading />}
@@ -174,7 +173,7 @@ class SearchPage extends React.Component {
   }
 }
 
-SearchPage.propTypes = {
+MainPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   searchrecord: PropTypes.object.isRequired,
 };
@@ -183,4 +182,4 @@ const mapStateToProps = state => ({
   searchrecord: state,
 });
 
-export default connect(mapStateToProps)(SearchPage);
+export default connect(mapStateToProps)(MainPage);

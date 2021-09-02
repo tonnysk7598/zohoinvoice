@@ -1,9 +1,10 @@
 {
     "SELF_CLIENT_CLIENT_ID": "1000.I1G5QXEMZ1910HW3TVTWY4B58P67WN",
     "SELF_CLIENT_CLIENT_SECRET": "e2dd11366d5c163c23abefccdc17adcfab305ec679",
-    "SELF_CLIENT_TEMPORARY_GRANT_TOKEN": "1000.4448e64bd04752082da1507cde831ec5.b62996d3e351b1c52f7f1157e01f5359",
+    "SELF_CLIENT_TEMPORARY_GRANT_TOKEN": "1000.7f40655eacb657ab2bd8429ee50d120a.492d66377ca3f6dee3ed5efc0e58c4b3",
     "REDIRECT_URI": "http://www.zoho.com/invoice",
     "GRAND_TYPE": "authorization_code",
     "ORG_ID": "757453836",
-    "CONTACTS_MAIN_URL": "https://invoice.zoho.com/api/v3/contacts"
+    "CONTACTS_MAIN_URL": "https://invoice.zoho.com/api/v3/contacts",
+    "OAUTH_MAIN_URL": "https://accounts.zoho.com/oauth/v2/token"
 }
