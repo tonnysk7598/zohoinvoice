@@ -33,7 +33,7 @@ app.get('/authenticate', async (req, res) => {
       oAuthRefToken = allTokens.refresh_token
       getAccessToken(allTokens.refresh_token)
     } else {
-      res.send({code: 400, error: 'Update auth token and re-run the application'});
+      res.send({ code: 400, error: 'Update auth token and re-run the application' });
     }
   } else {
     getAccessToken(oAuthRefToken)
@@ -81,11 +81,23 @@ app.get('/getContact/:id', async (req, res) => {
 });
 
 app.post('/createNewContact', async (req, res) => {
-  const { contactName, companyName, mobile } = req.body;
+  const {
+    contactName, companyName, mobile, salutationType,
+    firstName, lastName, email,
+  } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
-    "contact_persons": [{ mobile }],
+    "contact_persons": [
+      {
+        "salutation": salutationType,
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": email,
+        "mobile": mobile,
+        "is_primary_contact": true
+      }
+    ],
   }
   var options =
   {
@@ -105,7 +117,6 @@ app.post('/createNewContact', async (req, res) => {
 
 app.delete('/deleteContact/:id', async (req, res) => {
   const { id } = req.params
-  console.error(id)
   var options =
   {
     method: 'DELETE',
@@ -121,11 +132,23 @@ app.delete('/deleteContact/:id', async (req, res) => {
 
 app.put('/updateContact/:id', async (req, res) => {
   const { id } = req.params
-  const { contactName, companyName, mobile } = req.body;
+  const {
+    contactName, companyName, mobile, salutationType,
+    firstName, lastName, email,
+  } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
-    "contact_persons": [{ mobile }],
+    "contact_persons": [
+      {
+        "salutation": salutationType,
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": email,
+        "mobile": mobile,
+        "is_primary_contact": true
+      }
+    ],
   }
   var options =
   {
@@ -146,7 +169,7 @@ app.put('/updateContact/:id', async (req, res) => {
 app.post('/updateStatus/:id', async (req, res) => {
   const { id } = req.params
   const { status } = req.body;
-  if(status === 'active') {
+  if (status === 'active') {
     var options =
     {
       method: 'POST',
@@ -157,7 +180,7 @@ app.post('/updateStatus/:id', async (req, res) => {
         JSONString: JSON.stringify(id)
       }
     };
-    request(options, function (error, response, body) { 
+    request(options, function (error, response, body) {
       if (error) throw new Error(error);
       res.send(response);
     });
@@ -172,7 +195,7 @@ app.post('/updateStatus/:id', async (req, res) => {
         JSONString: JSON.stringify(id)
       }
     };
-    request(option, function (error, response, body) { 
+    request(option, function (error, response, body) {
       if (error) throw new Error(error);
       res.send(response);
     });

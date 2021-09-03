@@ -1,3 +1,4 @@
+import { salutation } from 'helper';
 import Loading from 'Loading';
 import React, { Component } from 'react'
 import {
@@ -73,7 +74,8 @@ export default class CloneContact extends Component {
 
   render() {
     const {
-      contactName, companyName, mobile, loading, invalidId
+      contactName, companyName, mobile, loading, invalidId,
+      firstName, lastName, salutationType, email,
     } = this.state;
     return (
       <div className="content">
@@ -91,6 +93,42 @@ export default class CloneContact extends Component {
                   </CardHeader>
                   <CardBody>
                     <Form>
+                      <Row>
+                        <Col className="pr-1" md="2">
+                          <FormGroup>
+                            <label>Salutation</label>
+                            <Input
+                              type="select"
+                              value={salutationType}
+                              onChange={(e) => this.setState({ salutationType: e.target.value })}
+                            >
+                              {salutation.map(d => (<option key={d.label} value={d.value}>{d.value}</option>))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="5">
+                          <FormGroup>
+                            <label>First Name</label>
+                            <Input
+                              placeholder="First Name"
+                              type="text"
+                              value={firstName}
+                              onChange={(e) => this.setState({ firstName: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="5">
+                          <FormGroup>
+                            <label>Last Name</label>
+                            <Input
+                              placeholder="Last Name"
+                              type="text"
+                              value={lastName}
+                              onChange={(e) => this.setState({ lastName: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
@@ -118,6 +156,17 @@ export default class CloneContact extends Component {
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
+                            <label>E-Mail</label>
+                            <Input
+                              placeholder="example@abc.com"
+                              type="text"
+                              value={email}
+                              onChange={(e) => this.setState({ email: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="6">
+                          <FormGroup>
                             <label>Mobile</label>
                             <Input
                               placeholder="xxxxx xxxxx"
@@ -130,22 +179,22 @@ export default class CloneContact extends Component {
                         </Col>
                       </Row>
                     </Form>
-                      <div className="update ml-auto mr-auto text-right">
+                    <div className="update ml-auto mr-auto text-right">
                       <Button
-                          className="btn-round"
-                          color="secondary"
-                          href="/"
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          className="btn-round"
-                          color="primary"
-                          onClick={() => this.submit()}
-                        >
-                          Update Contact
-                        </Button>
-                      </div>
+                        className="btn-round"
+                        color="secondary"
+                        href="/"
+                      >
+                        Close
+                      </Button>
+                      <Button
+                        className="btn-round"
+                        color="primary"
+                        onClick={() => this.submit()}
+                      >
+                        Create Contact
+                      </Button>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
@@ -156,10 +205,10 @@ export default class CloneContact extends Component {
               <Col md="2" />
               <Col md="8">
                 <Card className="card-user">
-                <CardBody>
-                  <Row><Col><h1> No Record Found ...!</h1></Col></Row>
-                  <Row><Col><p>back to &ensp;&ensp;<a href="/">Home</a></p></Col></Row>
-                </CardBody>
+                  <CardBody>
+                    <Row><Col><h1> No Record Found ...!</h1></Col></Row>
+                    <Row><Col><p>back to &ensp;&ensp;<a href="/">Home</a></p></Col></Row>
+                  </CardBody>
                 </Card>
               </Col>
               <Col md="2" />

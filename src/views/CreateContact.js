@@ -5,17 +5,28 @@ import {
 } from "reactstrap";
 import CardSubtitle from 'reactstrap/lib/CardSubtitle';
 import swal from 'sweetalert';
+import { salutation } from '../helper';
 
 export default class CreateContact extends Component {
   state = {
     contactName: '',
     companyName: '',
     mobile: '',
+    firstName: '',
+    lastName: '',
+    salutationType: 'Mr.',
+    email: '',
   }
 
   submit = async () => {
-    const { contactName, companyName, mobile } = this.state;
-    const handleData = { contactName, companyName, mobile }
+    const {
+      contactName, companyName, mobile, firstName,
+      lastName, salutationType, email,
+    } = this.state;
+    const handleData = {
+      contactName, companyName, mobile, firstName,
+      lastName, salutationType, email,
+    }
     const postData = await fetch('/createNewContact', {
       headers: {
         'Accept': 'application/json',
@@ -42,7 +53,10 @@ export default class CreateContact extends Component {
   }
 
   render() {
-    const { contactName, companyName, mobile } = this.state;
+    const {
+      contactName, companyName, mobile, firstName,
+      lastName, salutationType, email,
+    } = this.state;
     return (
       <div className="content">
         <Row>
@@ -55,6 +69,42 @@ export default class CreateContact extends Component {
               </CardHeader>
               <CardBody>
                 <Form>
+                  <Row>
+                    <Col className="pr-1" md="2">
+                      <FormGroup>
+                        <label>Salutation</label>
+                        <Input
+                          type="select"
+                          value={salutationType}
+                          onChange={(e) => this.setState({ salutationType: e.target.value })}
+                        >
+                          {salutation.map(d => (<option key={d.label} value={d.value}>{d.value}</option>))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="5">
+                      <FormGroup>
+                        <label>First Name</label>
+                        <Input
+                          placeholder="First Name"
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => this.setState({ firstName: e.target.value })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="5">
+                      <FormGroup>
+                        <label>Last Name</label>
+                        <Input
+                          placeholder="Last Name"
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => this.setState({ lastName: e.target.value })}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col className="pr-1" md="6">
                       <FormGroup>
@@ -82,6 +132,17 @@ export default class CreateContact extends Component {
                   <Row>
                     <Col className="pr-1" md="6">
                       <FormGroup>
+                        <label>E-Mail</label>
+                        <Input
+                          placeholder="example@abc.com"
+                          type="text"
+                          value={email}
+                          onChange={(e) => this.setState({ email: e.target.value })}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pr-1" md="6">
+                      <FormGroup>
                         <label>Mobile</label>
                         <Input
                           placeholder="xxxxx xxxxx"
@@ -93,24 +154,22 @@ export default class CreateContact extends Component {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row>
-                    <div className="update ml-auto mr-auto">
-                      <Button
-                        className="btn-round"
-                        color="secondary"
-                        href="/"
-                      >
-                        Close
-                      </Button>
-                      <Button
-                        className="btn-round"
-                        color="primary"
-                        onClick={() => this.submit()}
-                      >
-                        Creact Contact
-                      </Button>
-                    </div>
-                  </Row>
+                  <div className="update ml-auto mr-auto text-right">
+                    <Button
+                      className="btn-round"
+                      color="secondary"
+                      href="/"
+                    >
+                      Close
+                    </Button>
+                    <Button
+                      className="btn-round"
+                      color="primary"
+                      onClick={() => this.submit()}
+                    >
+                      Creact Contact
+                    </Button>
+                  </div>
                 </Form>
               </CardBody>
             </Card>

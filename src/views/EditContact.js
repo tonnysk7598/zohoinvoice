@@ -6,6 +6,7 @@ import {
 } from "reactstrap";
 import CardSubtitle from 'reactstrap/lib/CardSubtitle';
 import swal from 'sweetalert';
+import { salutation } from '../helper';
 
 export default class EditContact extends Component {
   state = {
@@ -15,7 +16,11 @@ export default class EditContact extends Component {
     mobile: '',
     status: 'active',
     invalidId: false,
-    loading: true
+    loading: true,
+    firstName: '',
+    lastName: '',
+    salutationType: 'Mr.',
+    email: '',
   }
 
   componentWillMount(props) {
@@ -33,19 +38,32 @@ export default class EditContact extends Component {
         } else {
           const contactDetails = JSON.parse(body);
           const { contact } = contactDetails;
+          const { contact_persons } = contact;
+
           this.setState({
             contactName: contact.contact_name,
             companyName: contact.company_name,
             mobile: contact.mobile, contactId,
-            invalidId: false, loading: false
+            invalidId: false, loading: false,
+            status: contact.status,
+            firstName: contact_persons[0].first_name,
+            lastName: contact_persons[0].last_name,
+            salutationType: contact_persons[0].salutation,
+            email: contact_persons[0].email,
           })
         }
       })
   }
 
   submit = async () => {
-    const { contactName, companyName, mobile, contactId, } = this.state;
-    const editData = { contactName, companyName, mobile, contactId, }
+    const {
+      contactName, companyName, mobile, firstName,
+      lastName, salutationType, email, contactId
+    } = this.state;
+    const editData = {
+      contactName, companyName, mobile, firstName,
+      lastName, salutationType, email,
+    }
     const putData = await fetch(`/updateContact/${contactId}`, {
       headers: {
         'Accept': 'application/json',
@@ -72,8 +90,7 @@ export default class EditContact extends Component {
   }
 
   changeStatus = async () => {
-    const { status } = this.state;
-    const contact = JSON.parse(sessionStorage.getItem("contact"))
+    const { contactId, status } = this.state;
     swal({
       title: 'Are you sure?',
       text: 'You are trying to change the status of the contact..!',
@@ -81,46 +98,46 @@ export default class EditContact extends Component {
       buttons: ['No', 'Yes Proceed'],
     })
       .then(async (proceed) => {
-        if(proceed) {
+        if (proceed) {
           const updateData = {
             status: status === 'active' ? 'inactive' : 'active',
-            contactId: contact.contact_id,
           }
-        const postData = await fetch('/updateStatus', {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: 'post',
-          body: JSON.stringify(updateData)
-        })
-        const res = await postData.json();
-        if(res.statusCode === 200){
-          const successMesage = JSON.parse(res.body);
-          swal({
-            title: 'Success',
-            text: `${successMesage.message}`,
-            icon: 'success',
-            button: true,
+          const postData = await fetch(`/updateStatus/${contactId}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: 'post',
+            body: JSON.stringify(updateData)
           })
-            .then(() => {
-              if(status === 'active') {
-                window.location = '/'
-              } else {
-                this.setState({ status: 'active'})
-              }
+          const res = await postData.json();
+          if (res.statusCode === 200) {
+            const successMesage = JSON.parse(res.body);
+            swal({
+              title: 'Success',
+              text: `${successMesage.message}`,
+              icon: 'success',
+              button: true,
             })
-        } else {
-          const errorMesage = JSON.parse(res.body);
-          swal('Error', `${errorMesage.message}`, 'error')
+              .then(() => {
+                if (status === 'active') {
+                  window.location = '/'
+                } else {
+                  this.setState({ status: 'active' })
+                }
+              })
+          } else {
+            const errorMesage = JSON.parse(res.body);
+            swal('Error', `${errorMesage.message}`, 'error')
+          }
         }
-      }
-    })
+      })
   }
-  
+
   render() {
     const {
-      contactName, companyName, mobile, loading, invalidId
+      contactName, companyName, mobile, loading, invalidId, status,
+      firstName, lastName, salutationType, email,
     } = this.state;
     return (
       <div className="content">
@@ -138,6 +155,42 @@ export default class EditContact extends Component {
                   </CardHeader>
                   <CardBody>
                     <Form>
+                      <Row>
+                        <Col className="pr-1" md="2">
+                          <FormGroup>
+                            <label>Salutation</label>
+                            <Input
+                              type="select"
+                              value={salutationType}
+                              onChange={(e) => this.setState({ salutationType: e.target.value })}
+                            >
+                              {salutation.map(d => (<option key={d.label} value={d.value}>{d.value}</option>))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="5">
+                          <FormGroup>
+                            <label>First Name</label>
+                            <Input
+                              placeholder="First Name"
+                              type="text"
+                              value={firstName}
+                              onChange={(e) => this.setState({ firstName: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="5">
+                          <FormGroup>
+                            <label>Last Name</label>
+                            <Input
+                              placeholder="Last Name"
+                              type="text"
+                              value={lastName}
+                              onChange={(e) => this.setState({ lastName: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
@@ -165,6 +218,17 @@ export default class EditContact extends Component {
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
+                            <label>E-Mail</label>
+                            <Input
+                              placeholder="example@abc.com"
+                              type="text"
+                              value={email}
+                              onChange={(e) => this.setState({ email: e.target.value })}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col className="pr-1" md="6">
+                          <FormGroup>
                             <label>Mobile</label>
                             <Input
                               placeholder="xxxxx xxxxx"
@@ -177,22 +241,30 @@ export default class EditContact extends Component {
                         </Col>
                       </Row>
                     </Form>
-                      <div className="update ml-auto mr-auto text-right">
+                    <div className="update ml-auto mr-auto text-right">
                       <Button
-                          className="btn-round"
-                          color="secondary"
-                          href="/"
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          className="btn-round"
-                          color="primary"
-                          onClick={() => this.submit()}
-                        >
-                          Update Contact
-                        </Button>
-                      </div>
+                        className="btn-round"
+                        color="secondary"
+                        href="/"
+                      >
+                        Close
+                      </Button>
+                      <Button
+                        className="btn-round"
+                        color="primary"
+                        onClick={() => this.changeStatus()}
+                      >
+                        {status === 'active' ? 'Mark as In-Active' : 'Mark as Active'}
+                      </Button>
+                      <Button
+                        className="btn-round"
+                        color="primary"
+                        onClick={() => this.submit()}
+                        disabled={status === 'active' ? false : true}
+                      >
+                        Update Contact
+                      </Button>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
@@ -203,10 +275,10 @@ export default class EditContact extends Component {
               <Col md="2" />
               <Col md="8">
                 <Card className="card-user">
-                <CardBody>
-                  <Row><Col><h1> No Record Found ...!</h1></Col></Row>
-                  <Row><Col><p>back to &ensp;&ensp;<a href="/">Home</a></p></Col></Row>
-                </CardBody>
+                  <CardBody>
+                    <Row><Col><h1> No Record Found ...!</h1></Col></Row>
+                    <Row><Col><p>back to &ensp;&ensp;<a href="/">Home</a></p></Col></Row>
+                  </CardBody>
                 </Card>
               </Col>
               <Col md="2" />
