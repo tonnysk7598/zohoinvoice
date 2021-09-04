@@ -15,17 +15,17 @@ export default class CreateContact extends Component {
     firstName: '',
     lastName: '',
     salutationType: 'Mr.',
-    email: '',
+    website: '',
   }
 
   submit = async () => {
     const {
       contactName, companyName, mobile, firstName,
-      lastName, salutationType, email,
+      lastName, salutationType, website,
     } = this.state;
     const handleData = {
       contactName, companyName, mobile, firstName,
-      lastName, salutationType, email,
+      lastName, salutationType, website,
     }
     const postData = await fetch('/createNewContact', {
       headers: {
@@ -55,7 +55,7 @@ export default class CreateContact extends Component {
   render() {
     const {
       contactName, companyName, mobile, firstName,
-      lastName, salutationType, email,
+      lastName, salutationType, website,
     } = this.state;
     return (
       <div className="content">
@@ -132,12 +132,12 @@ export default class CreateContact extends Component {
                   <Row>
                     <Col className="pr-1" md="6">
                       <FormGroup>
-                        <label>E-Mail</label>
+                        <label>Website</label>
                         <Input
-                          placeholder="example@abc.com"
+                          placeholder="www.example.com"
                           type="text"
-                          value={email}
-                          onChange={(e) => this.setState({ email: e.target.value })}
+                          value={website}
+                          onChange={(e) => this.setState({ website: e.target.value })}
                         />
                       </FormGroup>
                     </Col>

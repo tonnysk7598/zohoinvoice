@@ -16,7 +16,11 @@ export default class CloneContact extends Component {
     mobile: '',
     status: 'active',
     invalidId: false,
-    loading: true
+    loading: true,
+    firstName: '',
+    lastName: '',
+    salutationType: 'Mr.',
+    website: '',
   }
 
   componentWillMount(props) {
@@ -34,11 +38,17 @@ export default class CloneContact extends Component {
         } else {
           const contactDetails = JSON.parse(body);
           const { contact } = contactDetails;
+          const { contact_persons } = contact;
           this.setState({
             contactName: contact.contact_name,
             companyName: contact.company_name,
             mobile: contact.mobile, contactId,
-            invalidId: false, loading: false
+            invalidId: false, loading: false,
+            status: contact.status,
+            firstName: contact_persons[0].first_name,
+            lastName: contact_persons[0].last_name,
+            salutationType: contact_persons[0].salutation,
+            website: contact.website,
           })
         }
       })
@@ -75,7 +85,7 @@ export default class CloneContact extends Component {
   render() {
     const {
       contactName, companyName, mobile, loading, invalidId,
-      firstName, lastName, salutationType, email,
+      firstName, lastName, salutationType, website,
     } = this.state;
     return (
       <div className="content">
@@ -156,12 +166,12 @@ export default class CloneContact extends Component {
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
-                            <label>E-Mail</label>
+                            <label>Website</label>
                             <Input
-                              placeholder="example@abc.com"
+                              placeholder="www.example.com"
                               type="text"
-                              value={email}
-                              onChange={(e) => this.setState({ email: e.target.value })}
+                              value={website}
+                              onChange={(e) => this.setState({ website: e.target.value })}
                             />
                           </FormGroup>
                         </Col>

@@ -162,9 +162,6 @@ class MainPage extends React.Component {
               </Card>
             </Col>
           )): ''}
-          {/* {selectedContact && (
-            
-          )} */}
         </Row>
         </React.Fragment>
         ): <Loading />}

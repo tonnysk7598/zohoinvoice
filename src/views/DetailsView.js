@@ -21,7 +21,7 @@ export default class DetailsView extends Component {
     firstName: '',
     lastName: '',
     salutationType: 'Mr.',
-    email: '',
+    website: '',
   }
 
   componentWillMount(props) {
@@ -49,7 +49,7 @@ export default class DetailsView extends Component {
             firstName: contact_persons[0].first_name,
             lastName: contact_persons[0].last_name,
             salutationType: contact_persons[0].salutation,
-            email: contact_persons[0].email,
+            website: contact.website,
           })
         }
       })
@@ -118,7 +118,7 @@ export default class DetailsView extends Component {
   render() {
     const {
       contactName, companyName, mobile, loading, invalidId, status,
-      firstName, lastName, salutationType, email,
+      firstName, lastName, salutationType, website,
     } = this.state;
 
     return (
@@ -168,8 +168,8 @@ export default class DetailsView extends Component {
                         </Col>
                         <Col className="pr-1" md="6">
                           <FormGroup>
-                            <label>E-Mail</label>
-                            <h5>{email}</h5>
+                            <label>Website</label>
+                            <h5>{website}</h5>
                           </FormGroup>
                         </Col>
                       </Row>

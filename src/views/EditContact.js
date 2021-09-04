@@ -20,7 +20,7 @@ export default class EditContact extends Component {
     firstName: '',
     lastName: '',
     salutationType: 'Mr.',
-    email: '',
+    website: '',
   }
 
   componentWillMount(props) {
@@ -39,7 +39,6 @@ export default class EditContact extends Component {
           const contactDetails = JSON.parse(body);
           const { contact } = contactDetails;
           const { contact_persons } = contact;
-
           this.setState({
             contactName: contact.contact_name,
             companyName: contact.company_name,
@@ -49,7 +48,7 @@ export default class EditContact extends Component {
             firstName: contact_persons[0].first_name,
             lastName: contact_persons[0].last_name,
             salutationType: contact_persons[0].salutation,
-            email: contact_persons[0].email,
+            website: contact.website,
           })
         }
       })
@@ -58,11 +57,11 @@ export default class EditContact extends Component {
   submit = async () => {
     const {
       contactName, companyName, mobile, firstName,
-      lastName, salutationType, email, contactId
+      lastName, salutationType, website, contactId
     } = this.state;
     const editData = {
       contactName, companyName, mobile, firstName,
-      lastName, salutationType, email,
+      lastName, salutationType, website,
     }
     const putData = await fetch(`/updateContact/${contactId}`, {
       headers: {
@@ -137,7 +136,7 @@ export default class EditContact extends Component {
   render() {
     const {
       contactName, companyName, mobile, loading, invalidId, status,
-      firstName, lastName, salutationType, email,
+      firstName, lastName, salutationType, website,
     } = this.state;
     return (
       <div className="content">
@@ -218,12 +217,12 @@ export default class EditContact extends Component {
                       <Row>
                         <Col className="pr-1" md="6">
                           <FormGroup>
-                            <label>E-Mail</label>
+                            <label>Website</label>
                             <Input
-                              placeholder="example@abc.com"
+                              placeholder="www.example.com"
                               type="text"
-                              value={email}
-                              onChange={(e) => this.setState({ email: e.target.value })}
+                              value={website}
+                              onChange={(e) => this.setState({ website: e.target.value })}
                             />
                           </FormGroup>
                         </Col>

@@ -38,6 +38,12 @@ app.get('/authenticate', async (req, res) => {
   } else {
     getAccessToken(oAuthRefToken)
   }
+  // const url = `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoInvoice.contacts.ALL&client_id=1000.KCI56G7W3Y6F91FFJOPHGO1GHR89FM&state=testing&response_type=code&redirect_uri=http://www.zoho.com/&access_type=offline`
+  //    const resp = await fetch(url, {
+  //     method: 'post',
+  //   })
+  //   const allTokens = await resp.json();
+  // console.error(allTokens)
 });
 
 async function getAccessToken(refresh_token) {
@@ -83,17 +89,17 @@ app.get('/getContact/:id', async (req, res) => {
 app.post('/createNewContact', async (req, res) => {
   const {
     contactName, companyName, mobile, salutationType,
-    firstName, lastName, email,
+    firstName, lastName, website,
   } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
+    website,
     "contact_persons": [
       {
         "salutation": salutationType,
         "first_name": firstName,
         "last_name": lastName,
-        "email": email,
         "mobile": mobile,
         "is_primary_contact": true
       }
@@ -134,17 +140,17 @@ app.put('/updateContact/:id', async (req, res) => {
   const { id } = req.params
   const {
     contactName, companyName, mobile, salutationType,
-    firstName, lastName, email,
+    firstName, lastName, website,
   } = req.body;
   const contactData = {
     contact_name: contactName,
     company_name: companyName,
+    website,
     "contact_persons": [
       {
         "salutation": salutationType,
         "first_name": firstName,
         "last_name": lastName,
-        "email": email,
         "mobile": mobile,
         "is_primary_contact": true
       }
