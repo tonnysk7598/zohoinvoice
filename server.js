@@ -11,7 +11,7 @@ const config = require('./config.json');
 
 const client_id = config.SELF_CLIENT_CLIENT_ID;
 const client_secret = config.SELF_CLIENT_CLIENT_SECRET;
-// const code = config.SELF_CLIENT_TEMPORARY_GRANT_TOKEN;
+const code = config.SELF_CLIENT_TEMPORARY_GRANT_TOKEN;
 const redirect = config.REDIRECT_URI;
 const grand = config.GRAND_TYPE;
 const mainUrl = config.OAUTH_MAIN_URL;
@@ -22,40 +22,29 @@ var accessToken = null;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
-app.get('/validateAuth', async (req, res) => {
-  if(oAuthRefToken == null ) {
-    res.send({ code: 400, message: 'Application not validated' });
-  } else {
-    res.send({ code: 200, message: 'Application validated' });
-  }
-})
-
-app.get('/authenticate/:token', async (req, res) => {
-  const { token } = req.params;
-  //IF part will execute for the very first time of the program execution
+app.get('/authenticate', async (req, res) => {
   if (oAuthRefToken == null) {
-    const url = `${mainUrl}?code=${token}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect}&grant_type=${grand}`
+    const url = `${mainUrl}?code=${code}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect}&grant_type=${grand}`
     const resp = await fetch(url, {
       method: 'post',
     })
-    const allTokens = await resp.json(); // Generate refresh token using grant token
+    const allTokens = await resp.json();
     if (allTokens.refresh_token) {
-      oAuthRefToken = allTokens.refresh_token // Save refresh token locally
-      getAccessToken(allTokens.refresh_token) // Pass the refresh token to get access token
-      res.send({ code: 200, message: 'Application authenticated' });
+      oAuthRefToken = allTokens.refresh_token
+      getAccessToken(allTokens.refresh_token)
     } else {
-      res.send({ code: 400, message: 'Update auth token and re-run the application' });
+      res.send({ code: 400, error: 'Update auth token and re-run the application' });
     }
   } else {
-    getAccessToken(oAuthRefToken) //  Pass the refresh token to get access token
+    getAccessToken(oAuthRefToken)
   }
 });
 
 async function getAccessToken(refresh_token) {
   const url2 = `${mainUrl}?refresh_token=${refresh_token}&client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect}&grant_type=refresh_token`
   const resp2 = await fetch(url2, { method: 'post' })
-  const getAccessTokenByRefreshToken = await resp2.json() // Generating access token using refresh token
-  accessToken = getAccessTokenByRefreshToken.access_token // Save generated access token locally
+  const getAccessTokenByRefreshToken = await resp2.json()
+  accessToken = getAccessTokenByRefreshToken.access_token
 }
 
 app.get('/getAllContacts', async (req, res) => {
