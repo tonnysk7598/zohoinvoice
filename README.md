@@ -15,8 +15,10 @@
         * copy the generated authentication code, Client Id, Client Secret key and replace on the config.json file at root directory
         
         * Open URL - "https://invoice.zoho.com/"
+        
+        * Then access your Zoho invoice account and go to main page.
 
-        * Copy the oganization Id from the zoho ivoice account page by click profile icon and update the value at the config.json file
+        * Copy the oganization Id from the zoho ivoice account page by click profile icon at right top corner and update the value at the config.json file
        
 
             {
