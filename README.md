@@ -8,7 +8,7 @@
         * Create new zoho client account using "Self Client" type, now you got Cliet Id and Client Secret key
 
         * Then switch the tab to Generate Code and fill the below values,
-            -> mention sope as "ZohoInvoice.contacts.ALL"
+            -> mention scope as "ZohoInvoice.contacts.ALL"
             -> set time duration for the scope
             -> enter scope description (ex: test)
 
@@ -43,4 +43,4 @@
         * during this operation user may navigate to the contact creation page, after successful creation of contact 
           user will navigate back to the home page
         * once the record was successfully created you can see the contact at the home page, user can modify, clone and
-          delete the contac
+          delete the contact
