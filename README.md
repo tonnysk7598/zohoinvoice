@@ -1,13 +1,23 @@
 # web app using zohoinvoice
     Getting App ready:
 
-        * create new zoho client account and generate auth token by using "Self Client" type,
+        * Open URL - "https://accounts.zoho.com/developerconsole"
+
+        * Sign Up and create a new zoho account
+        
+        * Create new zoho client account using "Self Client" type, now you got Cliet Id and Client Secret key
+
+        * Then switch the tab to Generate Code and fill the below values,
             -> mention sope as "ZohoInvoice.contacts.ALL"
             -> set time duration for the scope
-            -> enter scope description
+            -> enter scope description (ex: test)
 
         * copy the generated authentication code, Client Id, Client Secret key and replace on the config.json file at root directory
-        * also copy the oganization Id from the zoho ivoice account page and update the value at the config.json file
+        
+        * Open URL - "https://invoice.zoho.com/"
+
+        * Copy the oganization Id from the zoho ivoice account page by click profile icon and update the value at the config.json file
+       
 
             {
                 "SELF_CLIENT_CLIENT_ID": "Client Id",
